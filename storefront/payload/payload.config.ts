@@ -2,11 +2,28 @@ import { buildConfig } from 'payload/config';
 import path from 'path';
 // import { mongooseAdapter } from '@payloadcms/db-mongodb';
 // import { postgresAdapter } from '@payloadcms/db-postgres';
-// import { slateEditor } from '@payloadcms/richtext-slate';
+import { slateEditor } from '@payloadcms/richtext-slate';
 
 // Placeholder for future imports
-// import { Users } from './collections/Users'; // Example User collection
+import { Users } from './collections/Users'; // Example User collection
 import { Media } from './collections/Media'; // Example Media collection
+import { Categories } from './collections/Categories';
+import { Products } from './collections/Products';
+import { ProductCollections } from './collections/ProductCollections';
+import { FaqCategories } from './collections/FaqCategories';
+import { FaqEntries } from './collections/FaqEntries';
+import { Pages } from './collections/Pages';
+import { Testimonials } from './collections/Testimonials';
+import { TextPages } from './collections/TextPages';
+import { SiteSettings } from './globals/SiteSettings';
+import { Header } from './globals/Header';
+import { Footer } from './globals/Footer';
+import { CookieBanner } from './globals/CookieBanner';
+import { Dictionary } from './globals/Dictionary';
+import { FaqIndex } from './globals/FaqIndex';
+import { HomePage } from './globals/HomePage';
+import { NotFoundPage } from './globals/NotFoundPage';
+import { imageBlockPlugin } from './components/richText/ImageBlock/plugin'; // Adjust path as needed
 
 export default buildConfig({
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3001', // Defaulting to 3001
@@ -27,10 +44,26 @@ export default buildConfig({
     // }),
   },
   collections: [
-    // Users, // Example: Add a Users collection for authentication
     Media, // Example: Add a Media collection for uploads
+    Users,
+    Categories,
+    Products,
+    ProductCollections,
+    FaqCategories,
+    FaqEntries,
+    Pages,
+    Testimonials,
+    TextPages,
   ],
   globals: [
+    SiteSettings,
+    Header,
+    Footer,
+    CookieBanner,
+    Dictionary,
+    FaqIndex,
+    HomePage,
+    NotFoundPage,
     // ExampleGlobal,
   ],
   typescript: {
@@ -57,5 +90,27 @@ export default buildConfig({
   //   defaultLocale: 'en',
   //   fallback: true,
   // },
-  // editor: slateEditor({}), // Example for configuring the Slate RichText editor
+  editor: slateEditor({
+    admin: {
+      elements: [
+        // Standard elements (can also be imported from @payloadcms/richtext-slate)
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'blockquote',
+        'link',
+        'ul',
+        'ol',
+        imageBlockPlugin, // Add the custom image block plugin here
+        // any other custom elements
+      ],
+      leaves: [
+        // Standard leaves (can also be imported from @payloadcms/richtext-slate)
+        'bold',
+        'italic',
+        'underline',
+        'strikethrough',
+        // any other custom leaves
+      ],
+      // You can also define custom leaf buttons, etc.
+    }
+  }),
 });
