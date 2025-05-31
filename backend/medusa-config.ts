@@ -21,18 +21,18 @@ export default defineConfig({
   },
   modules: [
     {
-      resolve: "./modules/sanity",
+      resolve: "./modules/payloadcms", // Assuming this resolves to backend/src/modules/payloadcms/service.ts
       options: {
-        api_token: process.env.SANITY_API_TOKEN,
-        project_id: process.env.SANITY_PROJECT_ID,
-        api_version: new Date().toISOString().split("T")[0],
-        dataset: "production",
-        studio_url: "https://munchies-tinloof.vercel.app/cms",
-        type_map: {
-          collection: "collection",
-          category: "category",
-          product: "product",
-        },
+        api_key: process.env.PAYLOAD_API_KEY,
+        api_endpoint: process.env.PAYLOAD_API_URL,
+        // Add collection_slugs here if they are different from defaults, e.g.:
+        // collection_slugs: {
+        //   product: "custom-products",
+        //   category: "custom-categories",
+        //   collection: "custom-product-collections",
+        // },
+        // Add target_locale if needed, e.g.:
+        // target_locale: "en-US",
       },
     },
     {
