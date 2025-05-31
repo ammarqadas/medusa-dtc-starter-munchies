@@ -6,20 +6,20 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk";
 import { FilterableProductProps } from "@medusajs/types";
-import SanityModuleService from "../modules/sanity/service";
+import PayloadCMSModuleService from "../modules/payloadcms/service";
 
 const step = createStep;
 const wf = createWorkflow;
 
 type Input = {
-  category_ids?: string[];
+  product_ids?: string[];
 };
 
 const syncStep = step(
   { name: "syncStep", async: true },
   async (input: Input, { container }) => {
     const productModule = container.resolve(Modules.PRODUCT);
-    const sanityModule: SanityModuleService = container.resolve("sanity");
+    const payloadcmsModule: PayloadCMSModuleService = container.resolve("payloadcms");
 
     let total = 0;
 
@@ -27,44 +27,39 @@ const syncStep = step(
     let hasMore = true;
     let offset = 0;
     let filter: FilterableProductProps = {};
-    if (isDefined(input.category_ids)) {
-      filter.id = input.category_ids;
+    if (isDefined(input.product_ids)) {
+      filter.id = input.product_ids;
     }
 
     while (hasMore) {
-      const [categories, count] =
-        await productModule.listAndCountProductCategories(filter, {
-          select: [
-            "id",
-            "name",
-            "handle",
-            "parent_category_id",
-            "category_children.id",
-          ],
-          relations: ["category_children"],
+      const [products, count] = await productModule.listAndCountProducts(
+        filter,
+        {
+          select: ["id", "handle", "title"],
           skip: offset,
           take: batchSize,
           order: { id: "ASC" },
-        });
+        },
+      );
 
       await promiseAll(
-        categories.map((prod) => {
-          return sanityModule.upsertSyncDocument("category", prod);
+        products.map((prod) => {
+          return payloadcmsModule.upsertSyncDocument("product", prod);
         }),
       );
 
       offset += batchSize;
       hasMore = offset < count;
-      total += categories.length;
+      total += products.length;
     }
 
     return new StepResponse({ total });
   },
 );
 
-const id = "sanity-category-sync";
+const id = "payloadcms-product-sync";
 
-export const sanityCategorySyncWorkflow = wf(
+export const payloadcmsProductSyncWorkflow = wf(
   { name: id, retentionTime: 10000 },
   function (input: Input) {
     const result = syncStep(input);

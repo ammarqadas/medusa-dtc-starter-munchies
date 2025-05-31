@@ -3,9 +3,9 @@ import {
   createWorkflow as wf,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk";
-import { sanityCategorySyncWorkflow } from "./sanity-sync-categories";
-import { sanityCollectionSyncWorkflow } from "./sanity-sync-collections";
-import { sanityProductSyncWorkflow } from "./sanity-sync-products";
+import { payloadcmsCategorySyncWorkflow } from "./payloadcms-sync-categories";
+import { payloadcmsCollectionSyncWorkflow } from "./payloadcms-sync-collections";
+import { payloadcmsProductSyncWorkflow } from "./payloadcms-sync-products";
 
 type Input = {
   category_ids?: string[];
@@ -13,19 +13,19 @@ type Input = {
   collection_ids?: string[];
 };
 
-const id = "sanity-full-sync";
+const id = "payloadcms-full-sync";
 
-export const sanityFullSyncWorkflow = wf(
+export const payloadcmsFullSyncWorkflow = wf(
   { name: id, retentionTime: 10000 },
   function (input: Input) {
     const [product_total, category_total, collection_total] = parallelize(
-      sanityProductSyncWorkflow.runAsStep({
+      payloadcmsProductSyncWorkflow.runAsStep({
         input: { product_ids: input.product_ids },
       }),
-      sanityCategorySyncWorkflow.runAsStep({
+      payloadcmsCategorySyncWorkflow.runAsStep({
         input: { category_ids: input.category_ids },
       }),
-      sanityCollectionSyncWorkflow.runAsStep({
+      payloadcmsCollectionSyncWorkflow.runAsStep({
         input: { collection_ids: input.collection_ids },
       }),
     );
